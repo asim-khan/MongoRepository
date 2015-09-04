@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MongoRepository
 {
-    public class MongoRepository<T> : IMongoRepository
+    public class MongoRepository<T> : IMongoRepository 
     {
         private IMongoClient _client;
         private IMongoDatabase db;
