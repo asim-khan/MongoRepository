@@ -9,11 +9,12 @@ namespace MongoRepository
 {
     public interface IMongoRepository
     {
-        virtual IEnumerable<T> GetAll<T>();
-        virtual T GetById<T>(ObjectId Id);
-        virtual T Insert<T>(T Document);
-        virtual T Update<T>(T Document);
-        virtual T Delete<T>(T Document);
-        virtual T DeleteById<T>(Object Id);
+        IEnumerable<T> GetAll<T>(string collectionName);
+        BsonDocument GetById(string collectionName, ObjectId Id);
+        T Insert<T>(T Document);
+        T Update<T>(T Document);
+        T Delete<T>(T Document);
+        T DeleteById<T>(Object Id);
+        T DeleteInsert<T>(T Document);
     }
 }

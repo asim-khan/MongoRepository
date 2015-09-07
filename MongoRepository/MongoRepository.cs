@@ -1,6 +1,8 @@
-﻿using MongoDB.Driver;
+﻿using MongoDB.Bson;
+using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,18 +24,25 @@ namespace MongoRepository
         {
             get
             {
-                //ConfigurationManager
+                if (ConfigurationManager.AppSettings["mongourl"] != null)
+                    return ConfigurationManager.AppSettings["mongourl"].ToString();
+                else
+                    return string.Empty;
             }
         }
 
-        public IEnumerable<T> GetAll<T>()
+        public IEnumerable<T> GetAll<T>(string collectionName)
         {
-            throw new NotImplementedException();
+            IMongoCollection<T> collection = db.GetCollection<T>(collectionName);
+            return collection.Find<T>(x => true).ToListAsync<T>().Result;
         }
 
-        public T GetById<T>(MongoDB.Bson.ObjectId Id)
+        public BsonDocument GetById(string collectionName, MongoDB.Bson.ObjectId id)
         {
-            throw new NotImplementedException();
+            var collection = db.GetCollection<BsonDocument>(collectionName);
+            var builder = Builders<BsonDocument>.Filter;
+            var filter = builder.Eq("Id", id.ToString());
+            return collection.Find<BsonDocument>(filter).FirstOrDefaultAsync().Result;
         }
 
         public T Insert<T>(T Document)
@@ -52,6 +61,16 @@ namespace MongoRepository
         }
 
         public T DeleteById<T>(object Id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public T GetById<T>(ObjectId Id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public T DeleteInsert<T>(T Document)
         {
             throw new NotImplementedException();
         }
