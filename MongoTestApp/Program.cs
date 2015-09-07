@@ -31,8 +31,8 @@ namespace MongoTestApp
             //    Console.WriteLine(restaurant.Name);
             //}
 
-            MongoRepository<Restaurant> restaurantRepo = new MongoRepository<Restaurant>(mongoUrl, databaseName);
-            var list = restaurantRepo.GetAll<Restaurant>("restaurants");
+            MongoRepository<Restaurant> restaurantRepo = new MongoRepository<Restaurant>(mongoUrl, databaseName, "restaurants");
+            var list = restaurantRepo.GetAll<Restaurant>();
 
             Console.ReadLine();
         }

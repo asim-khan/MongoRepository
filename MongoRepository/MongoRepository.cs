@@ -9,15 +9,13 @@ using System.Threading.Tasks;
 
 namespace MongoRepository
 {
-    public class MongoRepository<T> : IMongoRepository 
+    public class MongoRepository<T> : Repository<T>, IMongoRepository<T> where T : MongoEntity
     {
-        private IMongoClient _client;
-        private IMongoDatabase db;
-
-        public MongoRepository(string mongoUrl, string databaseName)
+        public MongoRepository(string mongoUrl, string databaseName, string collectionName)
         {
-            _client = new MongoClient(mongoUrl);
-            db = _client.GetDatabase(databaseName);
+            this._client = new MongoClient(mongoUrl);
+            this.db = _client.GetDatabase(databaseName);
+            this.CollectionName = collectionName;
         }
 
         public string MongoUrl
@@ -31,23 +29,24 @@ namespace MongoRepository
             }
         }
 
-        public IEnumerable<T> GetAll<T>(string collectionName)
+        public IEnumerable<T> GetAll<T>()
         {
-            IMongoCollection<T> collection = db.GetCollection<T>(collectionName);
+            IMongoCollection<T> collection = db.GetCollection<T>(this.CollectionName);
             return collection.Find<T>(x => true).ToListAsync<T>().Result;
         }
 
-        public BsonDocument GetById(string collectionName, MongoDB.Bson.ObjectId id)
+        public BsonDocument GetById(MongoDB.Bson.ObjectId id)
         {
-            var collection = db.GetCollection<BsonDocument>(collectionName);
+            var collection = db.GetCollection<BsonDocument>(this.CollectionName);
             var builder = Builders<BsonDocument>.Filter;
             var filter = builder.Eq("Id", id.ToString());
             return collection.Find<BsonDocument>(filter).FirstOrDefaultAsync().Result;
         }
 
-        public T Insert<T>(T Document)
+        public void Insert<T>(T Document)
         {
-            throw new NotImplementedException();
+            var collection = db.GetCollection<T>(this.CollectionName);
+            collection.InsertOneAsync(Document);
         }
 
         public T Update<T>(T Document)
@@ -55,14 +54,20 @@ namespace MongoRepository
             throw new NotImplementedException();
         }
 
-        public T Delete<T>(T Document)
+        public void Delete(BsonDocument Document)
         {
-            throw new NotImplementedException();
+            var collection = db.GetCollection<BsonDocument>(this.CollectionName);
+            var builder = Builders<BsonDocument>.Filter;
+            var filter = builder.Eq("Id", "");
+            collection.DeleteOneAsync(filter);
         }
 
-        public T DeleteById<T>(object Id)
+        public void DeleteById(object Id)
         {
-            throw new NotImplementedException();
+            var collection = db.GetCollection<BsonDocument>(this.CollectionName);
+            var builder = Builders<BsonDocument>.Filter;
+            var filter = builder.Eq("Id", Id.ToString());
+            collection.DeleteOneAsync(filter);
         }
 
         public T GetById<T>(ObjectId Id)
@@ -71,6 +76,17 @@ namespace MongoRepository
         }
 
         public T DeleteInsert<T>(T Document)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        public T Delete<T>(T Document)
+        {
+            throw new NotImplementedException();
+        }
+
+        public T DeleteById<T>(object Id)
         {
             throw new NotImplementedException();
         }

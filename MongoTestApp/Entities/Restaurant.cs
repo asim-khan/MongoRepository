@@ -1,5 +1,6 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using MongoRepository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,10 +9,12 @@ using System.Threading.Tasks;
 
 namespace MongoTestApp.Entities
 {
-    public class Restaurant
+    public class Restaurant : MongoEntity
     {
-        [BsonId]
-        public ObjectId Id { get; set; }
+        public Restaurant()
+        {
+            this.CollectionName = "restaurants";
+        }
 
         [BsonElement("restaurant_id")]
         public string RestaurantId { get; set; }

@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace MongoRepository
 {
-    public interface IMongoRepository
+    public interface IMongoRepository<T>
     {
-        IEnumerable<T> GetAll<T>(string collectionName);
-        BsonDocument GetById(string collectionName, ObjectId Id);
-        T Insert<T>(T Document);
+        IEnumerable<T> GetAll<T>();
+        BsonDocument GetById(ObjectId Id);
+        void Insert<T>(T Document);
         T Update<T>(T Document);
         T Delete<T>(T Document);
         T DeleteById<T>(Object Id);
