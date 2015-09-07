@@ -31,4 +31,31 @@ namespace MongoTestApp.Entities
         [BsonElement("grades")]
         public List<RestaurantGrade> Grade { get; set; }
     }
+
+    public class RestaurantGrade
+    {
+        [BsonElement("score")]
+        public int? Score { get; set; }
+
+        [BsonElement("date")]
+        public DateTime Date { get; set; }
+
+        [BsonElement("grade")]
+        public string Grade { get; set; }
+    }
+
+    public class Address
+    {
+        [BsonElement("coord")]
+        public List<double> Coordinates { get; set; }
+
+        [BsonElement("street")]
+        public string Street { get; set; }
+
+        [BsonElement("zipcode")]
+        public string ZipCode { get; set; }
+
+        [BsonElement("building")]
+        public string Building { get; set; }
+    }
 }
