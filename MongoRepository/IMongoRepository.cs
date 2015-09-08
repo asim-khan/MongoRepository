@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MongoRepository
 {
-    public interface IMongoRepository<T>
+    public interface IMongoRepository<T> where T : MongoEntity, new()
     {
         IEnumerable<T> GetAll<T>();
         BsonDocument GetById(ObjectId Id);

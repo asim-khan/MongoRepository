@@ -9,24 +9,13 @@ using System.Threading.Tasks;
 
 namespace MongoRepository
 {
-    public class MongoRepository<T> : Repository<T>, IMongoRepository<T> where T : MongoEntity
+    public class MongoRepository<T> : Repository<T>, IMongoRepository<T> where T : MongoEntity, new()
     {
         public MongoRepository(string mongoUrl, string databaseName, string collectionName)
         {
             this._client = new MongoClient(mongoUrl);
             this.db = _client.GetDatabase(databaseName);
             this.CollectionName = collectionName;
-        }
-
-        public string MongoUrl
-        {
-            get
-            {
-                if (ConfigurationManager.AppSettings["mongourl"] != null)
-                    return ConfigurationManager.AppSettings["mongourl"].ToString();
-                else
-                    return string.Empty;
-            }
         }
 
         public IEnumerable<T> GetAll<T>()
@@ -39,8 +28,16 @@ namespace MongoRepository
         {
             var collection = db.GetCollection<BsonDocument>(this.CollectionName);
             var builder = Builders<BsonDocument>.Filter;
-            var filter = builder.Eq("Id", id.ToString());
+            var filter = builder.Eq("_id", id.ToString());
             return collection.Find<BsonDocument>(filter).FirstOrDefaultAsync().Result;
+        }
+
+        public T GetById<T>(ObjectId Id) where T: new()
+        {
+            var collection = db.GetCollection<T>(this.CollectionName);
+            var builder = Builders<T>.Filter;
+            var filter = builder.Eq("_id", Id.ToString());
+            return new T();
         }
 
         public void Insert<T>(T Document)
@@ -68,11 +65,6 @@ namespace MongoRepository
             var builder = Builders<BsonDocument>.Filter;
             var filter = builder.Eq("Id", Id.ToString());
             collection.DeleteOneAsync(filter);
-        }
-
-        public T GetById<T>(ObjectId Id)
-        {
-            throw new NotImplementedException();
         }
 
         public T DeleteInsert<T>(T Document)
