@@ -32,8 +32,9 @@ namespace MongoTestApp
             //}
 
             MongoRepository<Restaurant> restaurantRepo = new MongoRepository<Restaurant>(mongoUrl, databaseName, "restaurants");
-            var list = restaurantRepo.GetAll<Restaurant>();
+            //var list = restaurantRepo.GetAll<Restaurant>();
 
+            var t1 = restaurantRepo.GetByIdAsync(new ObjectId("55e69a970e6672a2fb2cc624"));
             var restaurant = restaurantRepo.GetById(new ObjectId("55e69a970e6672a2fb2cc624"));
 
             Console.ReadLine();

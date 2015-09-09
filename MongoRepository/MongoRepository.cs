@@ -16,6 +16,7 @@ namespace MongoRepository
             this._client = new MongoClient(mongoUrl);
             this.db = _client.GetDatabase(databaseName);
             this.CollectionName = collectionName;
+            this.collection = db.GetCollection<T>(this.CollectionName);
         }
 
         public IEnumerable<T> GetAll<T>()
@@ -24,63 +25,47 @@ namespace MongoRepository
             return collection.Find<T>(x => true).ToListAsync<T>().Result;
         }
 
-        public BsonDocument GetById(MongoDB.Bson.ObjectId id)
+        public T GetById(ObjectId Id)
         {
-            var collection = db.GetCollection<BsonDocument>(this.CollectionName);
-            var builder = Builders<BsonDocument>.Filter;
-            var filter = builder.Eq("_id", id.ToString());
-            return collection.Find<BsonDocument>(filter).FirstOrDefaultAsync().Result;
+            return collection.Find(x => x.Id == Id).FirstOrDefaultAsync().Result;
         }
 
-        public T GetById<T>(ObjectId Id) where T: new()
+        public async Task<T> GetByIdAsync(MongoDB.Bson.ObjectId Id)
         {
-            var collection = db.GetCollection<T>(this.CollectionName);
-            var builder = Builders<T>.Filter;
-            var filter = builder.Eq("_id", Id.ToString());
-            return new T();
+            return await collection.Find(x => x.Id == Id).FirstAsync();
         }
 
-        public void Insert<T>(T Document)
+        public bool Insert(T Document)
         {
-            var collection = db.GetCollection<T>(this.CollectionName);
-            collection.InsertOneAsync(Document);
+            var t1 = collection.InsertOneAsync(Document);
+            t1.Wait();
+            return t1.IsCompleted;
         }
 
-        public T Update<T>(T Document)
+        public void Update(ObjectId Id, Dictionary<string, string> Properties)
         {
-            throw new NotImplementedException();
+            
         }
 
-        public void Delete(BsonDocument Document)
+        public bool Delete(T Document)
         {
-            var collection = db.GetCollection<BsonDocument>(this.CollectionName);
-            var builder = Builders<BsonDocument>.Filter;
-            var filter = builder.Eq("Id", "");
-            collection.DeleteOneAsync(filter);
+            var t1 = collection.DeleteOneAsync(x=>x.Id == Document.Id);
+            t1.Wait();
+            return t1.IsCompleted;
         }
 
-        public void DeleteById(object Id)
+        public bool DeleteById(ObjectId Id)
         {
-            var collection = db.GetCollection<BsonDocument>(this.CollectionName);
-            var builder = Builders<BsonDocument>.Filter;
-            var filter = builder.Eq("Id", Id.ToString());
-            collection.DeleteOneAsync(filter);
+            var t = collection.DeleteOneAsync(x => x.Id == Id);
+            t.Wait();
+            return t.IsCompleted;
         }
 
-        public T DeleteInsert<T>(T Document)
+        public T DeleteInsert(T Document)
         {
-            throw new NotImplementedException();
-        }
-
-
-        public T Delete<T>(T Document)
-        {
-            throw new NotImplementedException();
-        }
-
-        public T DeleteById<T>(object Id)
-        {
-            throw new NotImplementedException();
+            Delete(Document);
+            Insert(Document);
+            return GetById(Document.Id);
         }
     }
 }

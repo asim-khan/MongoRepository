@@ -12,6 +12,7 @@ namespace MongoRepository
     {
         protected IMongoClient _client;
         protected IMongoDatabase db;
+        protected IMongoCollection<T> collection;
 
         public string CollectionName { get; set; }
 

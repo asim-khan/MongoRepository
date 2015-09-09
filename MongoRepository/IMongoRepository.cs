@@ -10,11 +10,12 @@ namespace MongoRepository
     public interface IMongoRepository<T> where T : MongoEntity, new()
     {
         IEnumerable<T> GetAll<T>();
-        BsonDocument GetById(ObjectId Id);
-        void Insert<T>(T Document);
-        T Update<T>(T Document);
-        T Delete<T>(T Document);
-        T DeleteById<T>(Object Id);
-        T DeleteInsert<T>(T Document);
+        T GetById(ObjectId Id);
+        Task<T> GetByIdAsync(MongoDB.Bson.ObjectId Id);
+        bool Insert(T Document);
+        T Update(T Document);
+        bool Delete(T Document);
+        bool DeleteById(ObjectId Id);
+        T DeleteInsert(T Document);
     }
 }
