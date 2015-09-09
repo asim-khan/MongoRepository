@@ -42,10 +42,11 @@ namespace MongoRepository
             return t1.IsCompleted;
         }
 
-        public void Update(ObjectId Id, BsonDocument Update)
+        public T Update(ObjectId Id, BsonDocument Update)
         {
             var filter = new BsonDocument("_id", Id);
             collection.UpdateOneAsync(filter, Update);
+            return GetById(Id);
         }
 
         public bool Delete(T Document)

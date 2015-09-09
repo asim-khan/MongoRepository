@@ -13,7 +13,7 @@ namespace MongoRepository
         T GetById(ObjectId Id);
         Task<T> GetByIdAsync(MongoDB.Bson.ObjectId Id);
         bool Insert(T Document);
-        T Update(T Document);
+        T Update(ObjectId Id, BsonDocument Document);
         bool Delete(T Document);
         bool DeleteById(ObjectId Id);
         T DeleteInsert(T Document);
